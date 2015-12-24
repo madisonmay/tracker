@@ -24,8 +24,14 @@ class Snapshot(object):
         line_numbers = range(line_number - context, line_number + context + 1)
         text = ""
         for i, line in enumerate(lines):
-            text += "  " + str(line_numbers[i]).ljust(8) + line + "\n"
+            text += " {numbers}{code}\n".format(
+                numbers=str(line_numbers[i]).ljust(8),
+                code=line
+            )
         return text
+
+    def __getitem__(self, name):
+        return self.state.__getitem__(name)
 
     def __repr__(self):
         state = repr(self.state)

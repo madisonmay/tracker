@@ -57,7 +57,7 @@ def tracked(*tracked, **kwargs):
                 """
                 if name in tracked:
                     self.__capture_state(name, value)
-                return super(Tracker, self).__setattr__(name, value)
+                return super(Tracker, self).__setitem__(name, value)
 
             def replay(self, names=None):
                 if not names:
