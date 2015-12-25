@@ -1,3 +1,8 @@
 0.1.0
  - Initial commit
  - Basic support for tracking object state
+
+0.1.1
+ - Addition of README
+ - Refactoring for readability
+ - Fixed issue with improper code snippets and line numbers returned

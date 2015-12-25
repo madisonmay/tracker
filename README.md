@@ -66,7 +66,7 @@ deposit(sheet, 100)
 print sheet.balance
 ```
 
-Using tracker's replay functionality, we can rewind and see what lines of code changes the sheet's balance and help our second developer uncover their simple mistake.
+Using tracker's replay functionality, we can rewind and see what lines of code changed the sheet's balance and help our second developer uncover their simple mistake.
 
 
 ```python
@@ -97,7 +97,7 @@ balance_sheet_debugging.py:4
   4       deposit(sheet, 100)
   5       print sheet.balance
 
-/home/m/Projects/Tracker/examples/balance_sheet.py:23
+balance_sheet.py:23
   22      def deposit(sheet, value):
   23          sheet.balance += value
   24          sheet.deposit(value)
@@ -121,6 +121,8 @@ balance_sheet.py:14
   15      
 ```
 
+Each `Snapshot` object in `sheet.replay()` has a `state` attribute (i.e. `{'balance': 200}`) and a `stack` attribute (an array of `Frame` objects).  Each `Frame` object has a `file` attribute and a `line` attribute which point to the line of code which triggered the modification.  For dead simple debugging, the `__str__` method of the `Snapshot` object outputs a human readable represenations of those values.
+
 Now we can easily walk through the code that caused the double deposit and follow how the `balance` attribute changed value over time.
 
 
@@ -128,3 +130,7 @@ How does it work?
 -----------------
 Tracker patches `__setattr__` and `__setitem__` in order to record changes to variables that you've placed on a watch list.
 Whenever a change is caught, the `inspect` library is used to capture the lines of code that caused the modification.  Tracker is barely over 100 lines of code long, so I encourage you to read the source for the gritty details.
+
+Contributions
+-------------
+Tracker is a work in progress, so pull requests, critical feedback, github issues, and feedback of any kind is welcome.

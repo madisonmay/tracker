@@ -10,7 +10,7 @@ class Snapshot(object):
     """
     def __init__(self, state=None, stack=None, context=1):
         self.state = state
-        self.stack = stack
+        self.stack = filter(Snapshot.valid_frame, stack)
         self._context = context
 
     @classmethod
@@ -45,15 +45,10 @@ class Snapshot(object):
     def __getitem__(self, name):
         return self.state.__getitem__(name)
 
-    def __repr__(self):
+    def __str__(self):
         state = repr(self.state)
         divider = '-' * 80 
-        frames = "\n".join(
-            [
-                Snapshot.format_frame(frame) for frame in self.stack
-                if Snapshot.valid_frame(frame)
-            ]
-        )
+        frames = "\n".join(map(Snapshot.format_frame, self.stack))
         return "\n{state}\n{divider}\n{frames}".format(
             state=state, divider=divider, frames=frames
         )
