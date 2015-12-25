@@ -2,6 +2,10 @@ tracker
 -------
 A time machine for debugging pesky stateful errors.
 
+Motivation
+----------
+It's not always clear what lines of code introduce ugly bugs.  By walking through modifications to an object's state step by step, `tracker` makes it simpler to debug where the flaws in your logic lie.
+
 Installation
 ------------
 
@@ -26,7 +30,7 @@ nosetests -v
 
 Usage
 -----
-Tracker uses class decorators to specify a list of attributes to monitor.  Let's walk through an example with a bit of code designed to implement a simple balance sheet.  See the `examples` directory for runnable code snippets.
+Tracker uses class decorators to specify a list of attributes to monitor as a program executes.  Let's walk through an example with a bit of code designed to implement a simple balance sheet and see how `tracker` might help hunt down a bug in some sample code.  See the `examples` directory for runnable code snippets.
 
 
 ```python
