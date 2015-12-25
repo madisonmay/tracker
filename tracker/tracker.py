@@ -4,7 +4,7 @@ import inspect
 from .snapshot import Snapshot
 
 
-Frame = namedtuple('Frame', ['file', 'line', 'code'])
+Frame = namedtuple('Frame', ['file', 'line', 'context'])
 Step = namedtuple('Step', ['name', 'value', 'stack'])
 
 def tracked(*tracked, **kwargs):
@@ -27,13 +27,13 @@ def tracked(*tracked, **kwargs):
                 Capture the state of a name, value pair along with the code
                 that caused the modification
                 """
-                stack = inspect.stack(context=code_context*2+1)
+                stack = inspect.stack()
                 frames = [
                     Frame(
                         file=frame[1],
                         line=frame[2],
-                        code=frame[4]
-                    ) for frame in reversed(stack[2:])
+                        context=code_context
+                    ) for frame in reversed(stack)
                 ]
                 self._history.append(
                     Step(

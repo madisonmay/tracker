@@ -28,6 +28,7 @@ class TestTracked(unittest.TestCase):
     def test_replay(self):
         history = [0, -100, -300, 100]
         for i, snapshot in enumerate(self.balance_sheet.replay()):
+            assert repr(snapshot)
             assert snapshot['balance'] == history[i]
             for frame in snapshot.stack:
                 assert isinstance(frame, Frame)

@@ -1,5 +1,7 @@
 import textwrap
+from itertools import izip_longest
 
+from .tracker import __file__ as SOURCE_FILE
 
 class Snapshot(object):
     """
@@ -12,21 +14,31 @@ class Snapshot(object):
         self._context = context
 
     @classmethod
-    def format_frame(cls, frame):
-        return "%s:%d\n%s" % (
-            frame.file, frame.line, Snapshot.format_code(frame.code, line_number=frame.line)
-        )
+    def valid_frame(cls, frame):
+        # exclude frames from tracker source
+        if SOURCE_FILE.startswith(frame.file):
+            return False
+        return True
 
     @classmethod
-    def format_code(cls, code, line_number):
+    def format_frame(cls, frame):
+        code = Snapshot.format_code(
+            filename=frame.file, line_number=frame.line, context=frame.context
+        )
+        return "%s:%d\n%s" % (frame.file, frame.line, code)
+
+    @classmethod
+    def format_code(cls, filename, line_number, context):
+        code_start = line_number - context - 1
+        code_end = line_number + context
+        code = open(filename).readlines()[code_start:code_end]
         lines = textwrap.dedent("".join(code)).split('\n')[:-1]
-        context = len(lines) / 2
-        line_numbers = range(line_number - context, line_number + context + 1)
+        line_numbers = range(code_start + 1, code_end + 1)
         text = ""
-        for i, line in enumerate(lines):
-            text += " {numbers}{code}\n".format(
-                numbers=str(line_numbers[i]).ljust(8),
-                code=line
+        for line_number, code_line in izip_longest(line_numbers, code):
+            text += "  {line_number}{code}".format(
+                line_number=str(line_number).ljust(8),
+                code=(code_line or "\n")
             )
         return text
 
@@ -35,6 +47,13 @@ class Snapshot(object):
 
     def __repr__(self):
         state = repr(self.state)
-        return "\n%s\n" % self.state + "\n".join(
-            [Snapshot.format_frame(frame) for frame in self.stack]
+        divider = '-' * 80 
+        frames = "\n".join(
+            [
+                Snapshot.format_frame(frame) for frame in self.stack
+                if Snapshot.valid_frame(frame)
+            ]
+        )
+        return "\n{state}\n{divider}\n{frames}".format(
+            state=state, divider=divider, frames=frames
         )
